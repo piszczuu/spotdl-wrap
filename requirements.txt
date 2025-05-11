@@ -1,0 +1,6 @@
+#spotdl
+spotdl
+ffmpeg
+
+#gui
+# pillow
