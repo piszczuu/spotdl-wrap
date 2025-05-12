@@ -1,4 +1,4 @@
-venv
-README_inspo.md
-spotdl
-# old
+.venv/
+README.md
+spotdl/
+old/
