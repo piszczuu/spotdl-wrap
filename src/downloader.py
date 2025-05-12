@@ -1,22 +1,25 @@
-# import subprocess, os, json
-# from utils import get_default_path
+import subprocess, os, json
+
+#returns spotdl_wrap path
+from utils import get_main_path
+#returns folder path
+from utils import create_playlist_folder
+
 # # Zadania:
 # # Składa komendę spotdl na podstawie settings
-# # Wywołuje subprocess.run(...)
 # # Obsługuje błędy
 # # Zwraca sukces / fail
 
+def 
+# wywołanie spotdl z opcjami z settings
+def download(get_input(), folder_name, settings):
+    main_path = get_main_path()
+    folder_path = create_playlist_folder()
 
-# # wywołanie spotdl z opcjami z settings
-# def download(url, folder_name, settings):
-#     default_path = get_default_path()
-#     music_path = os.path.join(desktop_path, "spotdl", "music")
-#     folder_path = os.path.join(music_path, folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
-#     if not os.path.exists(folder_path):
-#         os.makedirs(folder_path)
-
-#     ensure_logs_directory()  # Upewnij się, że folder logs istnieje
+    ensure_logs_directory()  # Upewnij się, że folder logs istnieje
 
 #     command = [
 #         "spotdl", "download", url,

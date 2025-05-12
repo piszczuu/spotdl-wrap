@@ -1,6 +1,4 @@
-"""
-Utils  Module
-"""
+
 
 from pathlib import Path
 import re
@@ -44,9 +42,16 @@ def validate_url(url: str, provider: str) -> bool:
     except Exception:
         return False
 
+#get url
+def get_url():
+    url = input('> ')
+    return url
+
+
 # Fetches Spotify playlist name from URL
 def get_spotify_playlist_name() -> str | None:
-    url = input('Spotify playlist url:\n> ').strip()
+    print('Spotify playlist url:')
+    url = get_url().strip()
     if not validate_url(url, 'spotify'):
         print("Error: Invalid Spotify URL")
         return None
@@ -64,7 +69,8 @@ def get_spotify_playlist_name() -> str | None:
 
 # Fetches YouTube playlist name from URL using yt-dlp
 def get_youtube_playlist_name() -> str | None:
-    url = input('Youtube playlist url:\n> ').strip()
+    print('Youtube playlist url:')
+    url = get_url().strip()
     if not validate_url(url, 'youtube'):
         print("Error: Invalid YouTube URL")
         return None
@@ -89,8 +95,11 @@ def create_playlist_folder() -> str | None:
     provider = get_playlist_provider()
     if provider == 'spotify':
         playlist_name = get_spotify_playlist_name() 
-    else: 
+    elif provider == 'youtube':
         playlist_name = get_youtube_playlist_name()
+    
+    if provider is None:
+        return None
 
     if not playlist_name:  # Check if name retrieval failed
         return None
