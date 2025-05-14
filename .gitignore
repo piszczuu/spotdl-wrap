@@ -1,3 +1,5 @@
 .venv/
 spotdl/
 __pycache__/
+spotdl.py
+test_urls.txt

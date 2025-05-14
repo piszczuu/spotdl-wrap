@@ -1,10 +1,12 @@
-
-
-from pathlib import Path
+import subprocess
+import platform
 import re
 import yt_dlp
 import requests
+from pathlib import Path
 from urllib.parse import urlparse
+from colorama import Fore, Style, init
+
     
 MAX_FILENAME_LENGTH = 255  # Maximum allowed filename length for most filesystems
 ALLOWED_DOMAINS = {
@@ -12,9 +14,11 @@ ALLOWED_DOMAINS = {
     'youtube': ['youtube.com', 'www.youtube.com', 'youtu.be']
 }
 
+
 # Returns the root path of the project (spotdl_wrap directory)
 def get_main_path() -> Path:
     return Path(__file__).parent.parent
+
 
 # Handles user selection of music platform (Spotify/YouTube)
 def get_playlist_provider() -> str:
@@ -29,10 +33,23 @@ def get_playlist_provider() -> str:
         print('Invalid choice. Try again or press "q" to quit.')
     return None
 
+
 # Sanitizes filename by removing special characters and truncating length
 def clear_name(name: str) -> str:
     name = re.sub(r'[<>:"/\\|?*\s]', '_', name.strip())
     return name[:MAX_FILENAME_LENGTH]
+
+
+# Clears the console screen
+def clear_screen():
+    try:
+        if platform.system() == "Windows":
+            subprocess.run("cls", shell=True)
+        else:
+            subprocess.run(["clear"])
+    except Exception:
+        print("Error clearing screen")
+
 
 # Validates if URL belongs to the specified provider's allowed domains
 def validate_url(url: str, provider: str) -> bool:
@@ -41,6 +58,7 @@ def validate_url(url: str, provider: str) -> bool:
         return any(allowed in domain for allowed in ALLOWED_DOMAINS[provider])
     except Exception:
         return False
+
 
 #get url
 def get_url():
@@ -67,6 +85,7 @@ def get_spotify_playlist_name() -> str | None:
         print(f"Error: {e}")
         return None
 
+
 # Fetches YouTube playlist name from URL using yt-dlp
 def get_youtube_playlist_name() -> str | None:
     print('Youtube playlist url:')
@@ -90,6 +109,7 @@ def get_youtube_playlist_name() -> str | None:
         print(f"YouTube error: {type(e).__name__}")
     return None
 
+
 # Main function that creates the playlist folder structure
 def create_playlist_folder() -> str | None:
     provider = get_playlist_provider()
@@ -109,9 +129,37 @@ def create_playlist_folder() -> str | None:
     folder_path.mkdir(parents=True, exist_ok=True)  # Create all missing directories
     return str(folder_path)
 
+
 # Entry point for script execution
 if __name__ == "__main__":
     if path := create_playlist_folder():
         print(f"Created folder: {path}")
     else:
         print("Failed to create folder.")
+
+
+# print colored text with colorama
+init(autoreset=True)
+def colored_text(text: str, color: str = 'white', style: str = 'normal') -> None:
+    
+    colors = {
+        "black": Fore.BLACK,
+        "red": Fore.RED,
+        "green": Fore.GREEN,
+        "yellow": Fore.YELLOW,
+        "blue": Fore.BLUE,
+        "magenta": Fore.MAGENTA,
+        "cyan": Fore.CYAN,
+        "white": Fore.WHITE
+    }
+    styles= {
+        "dim": Style.DIM,
+        "normal": Style.NORMAL,
+        "bright": Style.BRIGHT
+    }
+    
+    color_code = colors.get(color.lower(), Fore.WHITE)
+    style_code = styles.get(style.lower(), Style.NORMAL)
+
+    print(style_code + color_code + text + Style.RESET_ALL)
+    
