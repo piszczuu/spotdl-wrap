@@ -34,32 +34,6 @@ def get_playlist_provider() -> str:
     return None
 
 
-# Sanitizes filename by removing special characters and truncating length
-def clear_name(name: str) -> str:
-    name = re.sub(r'[<>:"/\\|?*\s]', '_', name.strip())
-    return name[:MAX_FILENAME_LENGTH]
-
-
-# Clears the console screen
-def clear_screen():
-    try:
-        if platform.system() == "Windows":
-            subprocess.run("cls", shell=True)
-        else:
-            subprocess.run(["clear"])
-    except Exception:
-        print("Error clearing screen")
-
-
-# Validates if URL belongs to the specified provider's allowed domains
-def validate_url(url: str, provider: str) -> bool:
-    try:
-        domain = urlparse(url).netloc
-        return any(allowed in domain for allowed in ALLOWED_DOMAINS[provider])
-    except Exception:
-        return False
-
-
 #get url
 def get_url():
     url = input('> ')
@@ -110,24 +84,64 @@ def get_youtube_playlist_name() -> str | None:
     return None
 
 
-# Main function that creates the playlist folder structure
-def create_playlist_folder() -> str | None:
+def get_playlist_info() -> tuple[str, str] | None:
+   
     provider = get_playlist_provider()
-    if provider == 'spotify':
-        playlist_name = get_spotify_playlist_name() 
-    elif provider == 'youtube':
-        playlist_name = get_youtube_playlist_name()
-    
     if provider is None:
         return None
 
-    if not playlist_name:  # Check if name retrieval failed
+    if provider == 'spotify':
+        playlist_name = get_spotify_playlist_name()
+    elif provider == 'youtube':
+        playlist_name = get_youtube_playlist_name()
+    else:
         return None
-    clean_playlist_name = clear_name(playlist_name)
 
-    folder_path = Path(get_main_path()) / 'spotdl' / 'music' / provider / clean_playlist_name
-    folder_path.mkdir(parents=True, exist_ok=True)  # Create all missing directories
-    return str(folder_path)
+    if playlist_name is None:
+        return None
+
+    return playlist_name, provider
+
+
+#get folder path
+def get_playlist_path() -> str | None:
+
+    result = get_playlist_info()
+    if result is None:
+        return None
+    playlist_name, provider = result
+    clean_playlist_name = clear_name(playlist_name)
+    main_path = get_main_path()
+
+    playlist_path = main_path / 'spotdl' / 'music' / provider / clean_playlist_name
+    return str(playlist_path)
+playlist_path = get_playlist_path()
+
+# creates the playlist folder structure
+def create_playlist_folder(playlist_path) -> str | None:
+
+    if not playlist_path:
+        print("Error: Failed to get playlist path.")    
+        return None
+    
+    playlist_path.mkdir(parents=True, exist_ok=True)  # Create directories
+
+
+
+
+
+
+
+''' 
+aby stworzyc folder potrzebuje: 
+sciezke do folderu -> 
+'''
+
+
+
+
+
+# ---------------------------------------------------------------------
 
 
 # Entry point for script execution
@@ -162,4 +176,28 @@ def colored_text(text: str, color: str = 'white', style: str = 'normal') -> None
     style_code = styles.get(style.lower(), Style.NORMAL)
 
     print(style_code + color_code + text + Style.RESET_ALL)
+
+# Clears the console screen
+def clear_screen():
+    try:
+        if platform.system() == "Windows":
+            subprocess.run("cls", shell=True)
+        else:
+            subprocess.run(["clear"])
+    except Exception:
+        print("Error clearing screen")
+
+# Sanitizes filename by removing special characters and truncating length
+def clear_name(name: str) -> str:
+    name = re.sub(r'[<>:"/\\|?*\s]', '_', name.strip())
+    return name[:MAX_FILENAME_LENGTH]
+
+
+# Validates if URL belongs to the specified provider's allowed domains
+def validate_url(url: str, provider: str) -> bool:
+    try:
+        domain = urlparse(url).netloc
+        return any(allowed in domain for allowed in ALLOWED_DOMAINS[provider])
+    except Exception:
+        return False
     

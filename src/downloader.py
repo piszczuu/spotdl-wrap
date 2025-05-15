@@ -1,22 +1,23 @@
-from utils import get_main_path
+import subprocess
+from src.settings import SPOTDL_SETTINGS
 
 
-def download_song(url, folder_name, settings):
 
-   command = [
-        "spotdl", "download", url,
-        "--skip-album-art", 
-        "--print-errors",
-        "--save-errors", os.path.join(desktop_path, "spotdl", "logs", "errors.txt"),
-        "--overwrite", "skip",
-        "--threads", "8",
-        "--bitrate", settings["bitrate"],
-        "--output", os.path.join(folder_path, "{artist} - {title}.mp3"),
-        "--format", settings["format"]
-    ]
+def download_song(url, settings):
+    command = ["spotdl", "download", url]
 
-    
+    for key, value in settings.items():
+        if value is None:  # flaga CLI
+            command.append(key)
+        else:
+            command.extend([key, str(value)])
 
+    try:
+        subprocess.run(command, check=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to download: {url}, error: {e}")
+        return False
 
 
 if __name__ == "__main__":
